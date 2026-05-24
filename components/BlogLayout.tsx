@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, Home } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { getSiteUrl, SITE_NAME } from '@/lib/site';
 import type { BlogPostMeta } from '@/lib/blog-posts';
@@ -55,14 +55,19 @@ export default function BlogLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      {/* Breadcrumb / back */}
-      <Link
-        href="/blog"
-        className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-zinc-500 transition-colors hover:text-emerald-700"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        All posts
-      </Link>
+      {/* Breadcrumb */}
+      <nav className="flex flex-wrap items-center gap-1.5 text-[12.5px] font-semibold text-zinc-500" aria-label="Breadcrumb">
+        <Link href="/" className="inline-flex items-center gap-1 transition-colors hover:text-emerald-700">
+          <Home className="h-3.5 w-3.5" />
+          Home
+        </Link>
+        <span aria-hidden className="text-zinc-300">/</span>
+        <Link href="/blog" className="transition-colors hover:text-emerald-700">
+          Blog
+        </Link>
+        <span aria-hidden className="text-zinc-300">/</span>
+        <span className="line-clamp-1 text-zinc-400">{post.title}</span>
+      </nav>
 
       {/* Header */}
       <header className="mt-4">
@@ -120,6 +125,7 @@ export default function BlogLayout({
             href="/"
             className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-[13.5px] font-semibold text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-900"
           >
+            <Home className="h-4 w-4" />
             How it works
           </Link>
         </div>
@@ -153,6 +159,27 @@ export default function BlogLayout({
           </div>
         </section>
       )}
+
+      {/* Final navigation strip — clear back-to-home + back-to-blog buttons */}
+      <nav
+        aria-label="Post navigation"
+        className="mt-12 flex flex-col items-stretch gap-2 border-t border-zinc-100 pt-6 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-[13.5px] font-semibold text-zinc-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50/40 hover:text-emerald-700 hover:shadow-md"
+        >
+          <Home className="h-4 w-4" />
+          Back to home
+        </Link>
+        <Link
+          href="/blog"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-[13.5px] font-semibold text-zinc-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50/40 hover:text-sky-700 hover:shadow-md"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          All blog posts
+        </Link>
+      </nav>
     </article>
   );
 }
