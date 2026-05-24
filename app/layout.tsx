@@ -82,14 +82,8 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ['/og.png'],
   },
-  icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: 'any' },
-    ],
-    apple: '/apple-icon.png',
-  },
-  manifest: '/manifest.webmanifest',
+  // Favicon is provided by app/icon.svg (Next.js file-based convention).
+  // og.png + apple-icon.png can be added to /public later if needed.
 };
 
 export const viewport: Viewport = {

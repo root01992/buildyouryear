@@ -59,12 +59,15 @@ export function passwordStrength(password: string): {
   label: string;
   color: string;
 } {
-  let score: 0 | 1 | 2 | 3 | 4 = 0;
-  if (password.length >= 8) score++;
-  if (password.length >= 12) score++;
-  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
-  if (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) score++;
+  // Build score with a plain number (TS narrows ++ off the literal union otherwise),
+  // then clamp + assert back into the 0..4 tuple index.
+  let raw = 0;
+  if (password.length >= 8) raw++;
+  if (password.length >= 12) raw++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) raw++;
+  if (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) raw++;
+  const score = Math.max(0, Math.min(4, raw)) as 0 | 1 | 2 | 3 | 4;
   const labels = ['Too short', 'Weak', 'Fair', 'Good', 'Strong'] as const;
-  const colors = ['bg-zinc-300', 'bg-rose-400', 'bg-amber-400', 'bg-emerald-400', 'bg-emerald-500'];
+  const colors = ['bg-zinc-300', 'bg-rose-400', 'bg-amber-400', 'bg-emerald-400', 'bg-emerald-500'] as const;
   return { score, label: labels[score], color: colors[score] };
 }
