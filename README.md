@@ -1,8 +1,29 @@
 # BuildYourYear
 
+🌐 **Live site:** [www.buildyouryear.com](https://www.buildyouryear.com/)
+📖 **Blog:** [buildyouryear.com/blog](https://www.buildyouryear.com/blog)
+🚀 **Start free:** [Sign up — no credit card](https://www.buildyouryear.com/signup)
+
+[![Open BuildYourYear](https://img.shields.io/badge/Open-buildyouryear.com-10b981?style=for-the-badge&logo=vercel&logoColor=white)](https://www.buildyouryear.com/)
+[![Read the Blog](https://img.shields.io/badge/Read-The_Blog-0ea5e9?style=for-the-badge)](https://www.buildyouryear.com/blog)
+[![Made with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
+
+---
+
 **Plan your day. Build your year.** 365 small days. One transformed year.
 
-Build daily habits, ship short- and long-term goals, save for what you want — with a clean, animated dashboard, a 12-week consistency heatmap, and a year-end recap that compounds. Backed by a MongoDB-stored account with bcrypt-hashed passwords and HttpOnly session cookies.
+[BuildYourYear](https://www.buildyouryear.com/) is a free habit tracker, daily to-do list, goal manager, and savings tracker — with a clean animated dashboard, a 12-week consistency heatmap, and a year-end recap that compounds. Backed by a MongoDB-stored account with bcrypt-hashed passwords and HttpOnly session cookies.
+
+> 🌱 Build daily habits · 🎯 Ship goals · 💰 Save for what you want · 📈 Watch your year compound
+
+### Featured reading
+
+- 📖 [How to Build a Habit That Sticks](https://www.buildyouryear.com/blog/how-to-build-habits-that-stick) — the 365-day method
+- ⚡ [The 12-Week Year Explained](https://www.buildyouryear.com/blog/12-week-year-explained) — Brian Moran's method
+- 🔥 [Habit Tracking 101: Streaks & Heatmaps](https://www.buildyouryear.com/blog/habit-tracking-streaks-heatmaps)
+- 🎯 [Goal Setting Frameworks Compared](https://www.buildyouryear.com/blog/goal-setting-frameworks-compared) — SMART vs OKRs vs 12-Week Year vs BHAG
+- 📈 [The Compound Effect: 1% Daily Improvement](https://www.buildyouryear.com/blog/compound-effect-1-percent-better)
+- 🎯 [Why You Quit Your Resolutions](https://www.buildyouryear.com/blog/why-new-year-resolutions-fail) — and how to finally finish them
 
 ## What's inside
 

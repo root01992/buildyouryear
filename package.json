@@ -2,6 +2,28 @@
   "name": "buildyouryear",
   "version": "0.1.0",
   "private": true,
+  "description": "Plan your day. Build your year. A free habit tracker, daily to-do list, goal manager, and savings tracker — with a 12-week consistency heatmap and year-end recap that compounds.",
+  "homepage": "https://www.buildyouryear.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/root01992/buildyouryear.git"
+  },
+  "bugs": {
+    "url": "https://github.com/root01992/buildyouryear/issues"
+  },
+  "keywords": [
+    "habit-tracker",
+    "goal-tracker",
+    "daily-planner",
+    "savings-tracker",
+    "12-week-year",
+    "productivity",
+    "year-tracker",
+    "build-your-year",
+    "nextjs",
+    "mongodb",
+    "consistency-heatmap"
+  ],
   "scripts": {
     "dev": "next dev --experimental-https",
     "dev:http": "next dev",
