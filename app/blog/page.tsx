@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { BLOG_POSTS } from '@/lib/blog-posts';
 import { SITE_NAME } from '@/lib/site';
+import BlogCardLink from '@/components/blog/BlogCardLink';
 
 export const metadata: Metadata = {
   title: 'Blog — building better days, one year at a time',
@@ -47,8 +48,9 @@ export default function BlogIndexPage() {
       </header>
 
       {/* Featured */}
-      <Link
-        href={`/blog/${featured.slug}`}
+      <BlogCardLink
+        slug={featured.slug}
+        from="blog_listing_featured"
         className="group mt-10 block overflow-hidden rounded-3xl border border-zinc-200 bg-gradient-to-br from-white via-emerald-50/30 to-sky-50/30 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
       >
         <div className={`h-1 w-full bg-gradient-to-r ${accentBar[featured.accent]}`} aria-hidden />
@@ -73,7 +75,7 @@ export default function BlogIndexPage() {
             {featured.emoji}
           </div>
         </div>
-      </Link>
+      </BlogCardLink>
 
       {/* Grid of remaining posts */}
       <section className="mt-10">
@@ -82,9 +84,10 @@ export default function BlogIndexPage() {
         </div>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {rest.map((p) => (
-            <Link
+            <BlogCardLink
               key={p.slug}
-              href={`/blog/${p.slug}`}
+              slug={p.slug}
+              from="blog_listing_grid"
               className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md"
             >
               <div className={`h-1 w-full bg-gradient-to-r ${accentBar[p.accent]}`} aria-hidden />
@@ -112,7 +115,7 @@ export default function BlogIndexPage() {
                   <span className="font-semibold text-emerald-700 group-hover:underline">Read →</span>
                 </div>
               </div>
-            </Link>
+            </BlogCardLink>
           ))}
         </div>
       </section>

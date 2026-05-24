@@ -52,6 +52,7 @@ import {
 import toast from 'react-hot-toast';
 import { useAuth } from '@/components/auth/AuthProvider';
 import ConfirmDialog, { type ConfirmOptions } from '@/components/ConfirmDialog';
+import { ev } from '@/lib/analytics';
 
 /** Promise-based confirmation function passed down to subviews. */
 type ConfirmFn = (opts: Omit<ConfirmOptions, 'onResolve'>) => Promise<boolean>;
@@ -775,7 +776,14 @@ type SyncStatus = 'idle' | 'saving' | 'saved' | 'error';
 export default function DailyTracker() {
   const { user } = useAuth();
   const userId = user?.id ?? null;
-  const [tab, setTab] = useState<Tab>('dashboard');
+  const [tab, rawSetTab] = useState<Tab>('dashboard');
+  // Wrap setTab to emit tab_switch analytics; only fires when the tab actually changes.
+  const setTab = useCallback((next: Tab) => {
+    rawSetTab((current) => {
+      if (current !== next) ev.tabSwitch({ from: current, to: next });
+      return next;
+    });
+  }, []);
   const [store, setStore] = useState<Store>(DEFAULT_STORE);
   const [hydrated, setHydrated] = useState(false);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
@@ -854,6 +862,7 @@ export default function DailyTracker() {
   }, [store, hydrated, userId]);
 
   const addTodo = useCallback((t: Omit<Todo, 'id' | 'createdAt' | 'done'>) => {
+    ev.taskAdd({ priority: t.priority, category: t.category });
     setStore((s) => ({
       ...s,
       todos: [{ ...t, id: uid(), createdAt: Date.now(), done: false }, ...s.todos],
@@ -861,28 +870,38 @@ export default function DailyTracker() {
   }, []);
 
   const toggleTodo = useCallback((id: string) => {
-    setStore((s) => ({
-      ...s,
-      todos: s.todos.map((t) =>
-        t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : undefined } : t,
-      ),
-    }));
+    setStore((s) => {
+      const todo = s.todos.find((t) => t.id === id);
+      if (todo) ev.taskCheck({ to_state: !todo.done ? 'done' : 'open' });
+      return {
+        ...s,
+        todos: s.todos.map((t) =>
+          t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : undefined } : t,
+        ),
+      };
+    });
   }, []);
 
   const deleteTodo = useCallback((id: string) => {
+    ev.taskDelete();
     setStore((s) => ({ ...s, todos: s.todos.filter((t) => t.id !== id) }));
   }, []);
 
   const skipTodo = useCallback((id: string) => {
-    setStore((s) => ({
-      ...s,
-      todos: s.todos.map((t) =>
-        t.id === id ? { ...t, skipped: !t.skipped, done: false } : t,
-      ),
-    }));
+    setStore((s) => {
+      const todo = s.todos.find((t) => t.id === id);
+      if (todo) ev.taskSkip({ to_state: !todo.skipped ? 'skipped' : 'unskipped' });
+      return {
+        ...s,
+        todos: s.todos.map((t) =>
+          t.id === id ? { ...t, skipped: !t.skipped, done: false } : t,
+        ),
+      };
+    });
   }, []);
 
   const rescheduleTodo = useCallback((id: string, newDate: string) => {
+    ev.taskReschedule({});
     setStore((s) => ({
       ...s,
       todos: s.todos.map((t) =>
@@ -907,6 +926,7 @@ export default function DailyTracker() {
         return t;
       });
       if (count > 0) {
+        ev.taskRollover({ count });
         toast.success(`Rolled over ${count} task${count === 1 ? '' : 's'} to today`);
       }
       return { ...s, todos: next };
@@ -914,6 +934,7 @@ export default function DailyTracker() {
   }, []);
 
   const addHabit = useCallback((name: string, emoji: string, color: string) => {
+    ev.habitAdd();
     setStore((s) => ({
       ...s,
       habits: [...s.habits, { id: uid(), name, emoji, color, createdAt: Date.now(), log: {} }],
@@ -928,9 +949,11 @@ export default function DailyTracker() {
         // Only celebrate when checking IN (not unchecking) and only for today
         const turningOn = !h.log[key];
         const isToday = key === todayKey();
+        ev.habitCheckIn({ to_state: turningOn ? 'done' : 'open' });
         if (turningOn && isToday) {
           const { current } = habitStreak(next);
           if (current === 7 || current === 30 || current === 100 || current === 365) {
+            ev.habitStreakMilestone({ days: current });
             const banners = {
               7: '7-day streak — one full week of showing up. 🔥',
               30: '30-day streak — the habit is yours now. ⚡',
@@ -947,18 +970,24 @@ export default function DailyTracker() {
   }, []);
 
   const togglePauseHabit = useCallback((id: string) => {
-    setStore((s) => ({
-      ...s,
-      habits: s.habits.map((h) => (h.id === id ? { ...h, paused: !h.paused } : h)),
-    }));
+    setStore((s) => {
+      const h = s.habits.find((x) => x.id === id);
+      if (h) ev.habitPauseToggle({ to_state: !h.paused ? 'paused' : 'active' });
+      return {
+        ...s,
+        habits: s.habits.map((h2) => (h2.id === id ? { ...h2, paused: !h2.paused } : h2)),
+      };
+    });
   }, []);
 
   const deleteHabit = useCallback((id: string) => {
+    ev.habitDelete();
     setStore((s) => ({ ...s, habits: s.habits.filter((h) => h.id !== id) }));
   }, []);
 
   const addGoal = useCallback(
     (g: Omit<Goal, 'id' | 'createdAt' | 'milestones' | 'status'> & { milestones?: string[] }) => {
+      ev.goalAdd();
       setStore((s) => ({
         ...s,
         goals: [
@@ -979,12 +1008,16 @@ export default function DailyTracker() {
   );
 
   const updateGoal = useCallback((id: string, patch: Partial<Goal>) => {
+    if (patch.status) ev.goalStatusChange({ to_status: patch.status });
     setStore((s) => ({ ...s, goals: s.goals.map((g) => (g.id === id ? { ...g, ...patch } : g)) }));
   }, []);
 
   const toggleMilestone = useCallback((goalId: string, msId: string) => {
     type Suggest = { goalId: string; title: string };
     setStore((s) => {
+      const goal = s.goals.find((g) => g.id === goalId);
+      const milestone = goal?.milestones.find((m) => m.id === msId);
+      if (milestone) ev.goalMilestoneToggle({ to_state: !milestone.done ? 'done' : 'open' });
       const suggestRef: { value: Suggest | null } = { value: null };
       const goals = s.goals.map((g) => {
         if (g.id !== goalId) return g;
@@ -1030,6 +1063,7 @@ export default function DailyTracker() {
   }, []);
 
   const addMilestone = useCallback((goalId: string, text: string) => {
+    ev.goalMilestoneAdd();
     setStore((s) => ({
       ...s,
       goals: s.goals.map((g) =>
@@ -1039,6 +1073,7 @@ export default function DailyTracker() {
   }, []);
 
   const deleteGoal = useCallback((id: string) => {
+    ev.goalDelete();
     setStore((s) => ({ ...s, goals: s.goals.filter((g) => g.id !== id) }));
   }, []);
 
@@ -1049,6 +1084,7 @@ export default function DailyTracker() {
         startingAmount?: number;
       },
     ) => {
+      ev.trackerAdd();
       setStore((s) => ({
         ...s,
         trackers: [
@@ -1076,18 +1112,24 @@ export default function DailyTracker() {
   }, []);
 
   const deleteTracker = useCallback((id: string) => {
+    ev.trackerDelete();
     setStore((s) => ({ ...s, trackers: s.trackers.filter((t) => t.id !== id) }));
   }, []);
 
   const togglePauseTracker = useCallback((id: string) => {
-    setStore((s) => ({
-      ...s,
-      trackers: s.trackers.map((t) => (t.id === id ? { ...t, paused: !t.paused } : t)),
-    }));
+    setStore((s) => {
+      const t = s.trackers.find((x) => x.id === id);
+      if (t) ev.trackerPauseToggle({ to_state: !t.paused ? 'paused' : 'active' });
+      return {
+        ...s,
+        trackers: s.trackers.map((t2) => (t2.id === id ? { ...t2, paused: !t2.paused } : t2)),
+      };
+    });
   }, []);
 
   const addContribution = useCallback(
     (trackerId: string, c: { date?: string; amount: number; note?: string }) => {
+      ev.trackerContribution({ amount: c.amount });
       setStore((s) => ({
         ...s,
         trackers: s.trackers.map((t) =>
@@ -1196,14 +1238,20 @@ export default function DailyTracker() {
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) handleImport(f);
+                  if (f) {
+                    ev.dashboardAction({ action: 'import' });
+                    handleImport(f);
+                  }
                   e.target.value = '';
                 }}
               />
             </label>
             <button
               type="button"
-              onClick={handleExport}
+              onClick={() => {
+                ev.dashboardAction({ action: 'export' });
+                handleExport();
+              }}
               className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium text-zinc-600 transition-colors hover:bg-emerald-50/60 hover:text-emerald-700"
             >
               <Download className="h-3.5 w-3.5" />
@@ -1225,6 +1273,7 @@ export default function DailyTracker() {
                   });
                   if (!ok) return;
                 }
+                ev.dashboardAction({ action: 'load_demo' });
                 setStore(generateSampleStore());
                 toast.success('Sample data loaded');
               }}
@@ -1252,6 +1301,7 @@ export default function DailyTracker() {
                 });
                 if (!ok) return;
               }
+              ev.dashboardAction({ action: 'load_plan' });
               setStore(generateTransformPlan());
               toast.success("Your 6-month plan is loaded — let's go.");
             }}
@@ -3180,6 +3230,7 @@ function TodosView({
         {/* Quick-add presets — one tap to seed text + category */}
         <QuickAddPresets
           onPick={(p) => {
+            ev.taskQuickAddPreset({ preset: p.text.trim().replace(/[^a-z0-9]+/gi, '_').toLowerCase().slice(0, 24) });
             setText((cur) => (cur ? cur : p.text));
             setCategory(p.category);
           }}
@@ -3276,7 +3327,10 @@ function TodosView({
             <button
               key={f}
               type="button"
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                if (filter !== f) ev.taskFilterChange({ to: f });
+                setFilter(f);
+              }}
               className={`rounded-md px-2.5 py-1 font-semibold capitalize transition-colors ${
                 filter === f ? 'bg-white text-emerald-700 shadow-sm' : 'text-zinc-600 hover:text-zinc-900'
               }`}

@@ -7,6 +7,7 @@ import { Field } from './LoginForm';
 import { Eye, EyeOff, Loader2, Mail, Lock, User } from 'lucide-react';
 import { passwordStrength } from '@/lib/auth';
 import toast from 'react-hot-toast';
+import { ev } from '@/lib/analytics';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -33,13 +34,17 @@ export default function SignupForm() {
       setError('Please accept the terms to continue.');
       return;
     }
+    ev.signupSubmit();
     setBusy(true);
     try {
       const user = await signUp({ email, displayName, password });
+      ev.signup();
       toast.success(`Welcome aboard, ${user.displayName.split(/\s+/)[0]}!`);
       router.push('/app');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not create account.');
+      const message = err instanceof Error ? err.message : 'Could not create account.';
+      ev.authError({ action: 'signup', message });
+      setError(message);
     } finally {
       setBusy(false);
     }
@@ -77,7 +82,12 @@ export default function SignupForm() {
           rightElement={
             <button
               type="button"
-              onClick={() => setShowPw((v) => !v)}
+              onClick={() =>
+                setShowPw((v) => {
+                  ev.passwordVisibilityToggle({ visible: !v });
+                  return !v;
+                })
+              }
               className="p-1 text-zinc-400 hover:text-zinc-600"
               aria-label={showPw ? 'Hide password' : 'Show password'}
             >

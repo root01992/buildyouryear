@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowRight, Calendar, Clock, Home } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { getSiteUrl, SITE_NAME } from '@/lib/site';
 import type { BlogPostMeta } from '@/lib/blog-posts';
+import BlogCardLink from '@/components/blog/BlogCardLink';
+import BlogCtaButton from '@/components/blog/BlogCtaButton';
 
 /**
  * Shared layout for every blog post.
@@ -114,20 +116,24 @@ export default function BlogLayout({
           Free forever. No credit card. Syncs across devices.
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Link
+          <BlogCtaButton
+            slug={post.slug}
+            label="start_day_1"
             href="/signup"
             className="group inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-[13.5px] font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-lg"
           >
             Start day 1 of your year
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <Link
+          </BlogCtaButton>
+          <BlogCtaButton
+            slug={post.slug}
+            label="how_it_works"
             href="/"
             className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-[13.5px] font-semibold text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-900"
           >
             <Home className="h-4 w-4" />
             How it works
-          </Link>
+          </BlogCtaButton>
         </div>
       </div>
 
@@ -139,9 +145,10 @@ export default function BlogLayout({
           </div>
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {related.map((p) => (
-              <Link
+              <BlogCardLink
                 key={p.slug}
-                href={`/blog/${p.slug}`}
+                slug={p.slug}
+                from={`blog_post_${post.slug}_related`}
                 className="group rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
               >
                 <div className="flex items-center gap-2">
@@ -154,7 +161,7 @@ export default function BlogLayout({
                   {p.title}
                 </div>
                 <div className="mt-1 text-[12.5px] leading-snug text-zinc-500">{p.tagline}</div>
-              </Link>
+              </BlogCardLink>
             ))}
           </div>
         </section>

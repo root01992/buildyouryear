@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import Logo from './Logo';
+import { ev } from '@/lib/analytics';
 
 export default function SiteFooter() {
   return (
@@ -13,10 +16,10 @@ export default function SiteFooter() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-zinc-500">
-          <Link href="/login" className="hover:text-zinc-900">Sign in</Link>
-          <Link href="/signup" className="hover:text-zinc-900">Sign up</Link>
-          <a href="#features" className="hover:text-zinc-900">Features</a>
-          <a href="#faq" className="hover:text-zinc-900">FAQ</a>
+          <Link href="/login" onClick={() => ev.navClick({ location: 'site_footer', label: 'sign_in', destination: '/login' })} className="hover:text-zinc-900">Sign in</Link>
+          <Link href="/signup" onClick={() => ev.navClick({ location: 'site_footer', label: 'sign_up', destination: '/signup' })} className="hover:text-zinc-900">Sign up</Link>
+          <a href="#features" onClick={() => ev.navClick({ location: 'site_footer', label: 'features', destination: '#features' })} className="hover:text-zinc-900">Features</a>
+          <a href="#faq" onClick={() => ev.navClick({ location: 'site_footer', label: 'faq', destination: '#faq' })} className="hover:text-zinc-900">FAQ</a>
           <span className="text-zinc-300">·</span>
           <span>© {new Date().getFullYear()} BuildYourYear</span>
         </div>

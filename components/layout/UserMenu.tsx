@@ -7,6 +7,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import DeleteAccountModal from '@/components/auth/DeleteAccountModal';
 import toast from 'react-hot-toast';
+import { ev } from '@/lib/analytics';
 
 function initials(name: string): string {
   return name
@@ -61,7 +62,12 @@ export default function UserMenu() {
     <div ref={ref} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          setOpen((o) => {
+            if (!o) ev.userMenuOpen();
+            return !o;
+          });
+        }}
         aria-haspopup="menu"
         aria-expanded={open}
         className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white py-1 pl-1 pr-2.5 text-[12.5px] font-semibold text-zinc-700 shadow-sm transition-colors hover:border-emerald-300 hover:text-zinc-900"
@@ -114,6 +120,7 @@ export default function UserMenu() {
               type="button"
               onClick={() => {
                 setOpen(false);
+                ev.passwordChange();
                 setPwOpen(true);
               }}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[13px] text-zinc-700 hover:bg-zinc-50"
@@ -127,6 +134,7 @@ export default function UserMenu() {
               type="button"
               onClick={async () => {
                 setOpen(false);
+                ev.logout();
                 try {
                   await signOut();
                   toast.success('Signed out');
@@ -146,6 +154,7 @@ export default function UserMenu() {
               type="button"
               onClick={() => {
                 setOpen(false);
+                ev.accountDelete();
                 setDelOpen(true);
               }}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[13px] text-rose-600 hover:bg-rose-50"

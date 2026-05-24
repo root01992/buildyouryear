@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import AuthShell from '@/components/auth/AuthShell';
 import SignupForm from '@/components/auth/SignupForm';
+import AuthModeLink from '@/components/auth/AuthModeLink';
 
 export const metadata: Metadata = {
   title: 'Create your free account',
@@ -31,9 +31,7 @@ export default function SignupPage() {
       footer={
         <>
           Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-emerald-700 hover:text-emerald-900">
-            Sign in →
-          </Link>
+          <AuthModeLink href="/login" to="login">Sign in →</AuthModeLink>
         </>
       }
     >

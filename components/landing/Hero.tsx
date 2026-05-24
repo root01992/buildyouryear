@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { ArrowRight, Check, Flame, Target, ListChecks, TrendingUp } from 'lucide-react';
+import { ev } from '@/lib/analytics';
 
 /** Animate a number from 0 to `end` over `duration` ms on mount. */
 function useCountUp(end: number, duration = 1400) {
@@ -160,6 +161,7 @@ export default function Hero() {
               {hydrated && user ? (
                 <Link
                   href="/app"
+                  onClick={() => ev.ctaClick({ location: 'hero', label: 'open_dashboard', destination: '/app' })}
                   className="group inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-[14.5px] font-semibold text-white shadow-lg shadow-emerald-600/25 transition-all hover:bg-emerald-700 hover:shadow-emerald-600/40"
                 >
                   Open your dashboard
@@ -169,6 +171,7 @@ export default function Hero() {
                 <>
                   <Link
                     href="/signup"
+                    onClick={() => ev.ctaClick({ location: 'hero', label: 'start_day_1', destination: '/signup' })}
                     className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-emerald-600 px-5 py-3 text-[14.5px] font-semibold text-white shadow-lg shadow-emerald-600/30 transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-600/45"
                     style={{ animation: 'ctaPulse 4.2s ease-in-out 2400ms infinite' }}
                   >
@@ -182,6 +185,7 @@ export default function Hero() {
                   </Link>
                   <Link
                     href="/login"
+                    onClick={() => ev.ctaClick({ location: 'hero', label: 'i_already_have_account', destination: '/login' })}
                     className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-3 text-[14.5px] font-semibold text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:text-zinc-900"
                   >
                     I already have an account

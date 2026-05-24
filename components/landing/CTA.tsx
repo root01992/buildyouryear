@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { ArrowRight } from 'lucide-react';
+import { ev } from '@/lib/analytics';
 
 export default function CTA() {
   const { user, hydrated } = useAuth();
@@ -30,6 +31,7 @@ export default function CTA() {
             {hydrated && user ? (
               <Link
                 href="/app"
+                onClick={() => ev.ctaClick({ location: 'bottom_cta', label: 'open_dashboard', destination: '/app' })}
                 className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14.5px] font-bold text-emerald-700 shadow-lg transition-all hover:bg-emerald-50"
               >
                 Open your dashboard
@@ -39,6 +41,7 @@ export default function CTA() {
               <>
                 <Link
                   href="/signup"
+                  onClick={() => ev.ctaClick({ location: 'bottom_cta', label: 'create_account', destination: '/signup' })}
                   className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14.5px] font-bold text-emerald-700 shadow-lg transition-all hover:bg-emerald-50"
                 >
                   Create your account
@@ -46,6 +49,7 @@ export default function CTA() {
                 </Link>
                 <Link
                   href="/login"
+                  onClick={() => ev.ctaClick({ location: 'bottom_cta', label: 'sign_in', destination: '/login' })}
                   className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-[14.5px] font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
                 >
                   Sign in

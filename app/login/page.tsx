@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import AuthShell from '@/components/auth/AuthShell';
 import LoginForm from '@/components/auth/LoginForm';
+import AuthModeLink from '@/components/auth/AuthModeLink';
 
 export const metadata: Metadata = {
   title: 'Sign in',
@@ -25,9 +25,7 @@ export default function LoginPage() {
       footer={
         <>
           Don&rsquo;t have an account?{' '}
-          <Link href="/signup" className="font-semibold text-emerald-700 hover:text-emerald-900">
-            Create one →
-          </Link>
+          <AuthModeLink href="/signup" to="signup">Create one →</AuthModeLink>
         </>
       }
     >

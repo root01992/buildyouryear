@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { ev } from '@/lib/analytics';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -22,13 +23,17 @@ export default function LoginForm() {
       setError('Enter your email and password.');
       return;
     }
+    ev.loginSubmit();
     setBusy(true);
     try {
       const user = await signIn({ email, password });
+      ev.login();
       toast.success(`Welcome back, ${user.displayName.split(/\s+/)[0]}`);
       router.push('/app');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not sign in.');
+      const message = err instanceof Error ? err.message : 'Could not sign in.';
+      ev.authError({ action: 'login', message });
+      setError(message);
     } finally {
       setBusy(false);
     }
@@ -57,7 +62,12 @@ export default function LoginForm() {
           rightElement={
             <button
               type="button"
-              onClick={() => setShowPw((v) => !v)}
+              onClick={() => {
+                setShowPw((v) => {
+                  ev.passwordVisibilityToggle({ visible: !v });
+                  return !v;
+                });
+              }}
               className="p-1 text-zinc-400 hover:text-zinc-600"
               aria-label={showPw ? 'Hide password' : 'Show password'}
             >

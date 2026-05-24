@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { ev } from '@/lib/analytics';
 
 const faqs = [
   {
@@ -52,7 +53,11 @@ export default function FAQ() {
               <li key={f.q}>
                 <button
                   type="button"
-                  onClick={() => setOpen(isOpen ? null : i)}
+                  onClick={() => {
+                    const nextOpen = !isOpen;
+                    setOpen(nextOpen ? i : null);
+                    ev.faqToggle({ question: f.q, opened: nextOpen });
+                  }}
                   className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-zinc-50"
                   aria-expanded={isOpen}
                 >
