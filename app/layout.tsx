@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import Analytics from '@/components/Analytics';
 import { getSiteUrl, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from '@/lib/site';
 import './globals.css';
 
@@ -297,6 +298,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         </AuthProvider>
+        {/* Google Analytics 4 — gated on production + env var (NEXT_PUBLIC_GA_ID) */}
+        <Analytics />
       </body>
     </html>
   );
