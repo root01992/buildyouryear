@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Daily Tracker Dev",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": ["-c", "export PATH=/opt/homebrew/bin:$PATH && cd /Users/omprakashutaha/Desktop/daily-tracker && npm run dev"],
+      "port": 3001,
+      "autoPort": true
+    }
+  ]
+}
