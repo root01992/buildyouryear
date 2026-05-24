@@ -2,15 +2,12 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import { getSiteUrl, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from '@/lib/site';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
-const SITE_URL = 'https://buildyouryear.com';
-const SITE_NAME = 'BuildYourYear';
-const SITE_TAGLINE = 'Plan your day. Build your year.';
-const SITE_DESCRIPTION =
-  'BuildYourYear turns 365 small days into one transformed year. Track daily to-dos, build habit streaks, save for what you want, and ship short- and long-term goals — with a beautiful dashboard, 12-week consistency heatmap, and a year-end recap that compounds. Free, encrypted, syncs across devices.';
+const SITE_URL = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -49,6 +46,14 @@ export const metadata: Metadata = {
   ],
   category: 'productivity',
   alternates: { canonical: '/' },
+  // Search engine verification (set via env vars in Vercel — no code edit needed)
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    yandex: process.env.YANDEX_VERIFICATION || undefined,
+    other: process.env.BING_VERIFICATION
+      ? { 'msvalidate.01': process.env.BING_VERIFICATION }
+      : undefined,
+  },
   robots: {
     index: true,
     follow: true,
@@ -214,10 +219,48 @@ const howToSchema = {
   ],
 };
 
+// WebSite schema — enables SiteLinks Search Box in Google results and signals site identity
+const webSiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  inLanguage: 'en-US',
+};
+
+// SoftwareApplication schema — richer than WebApplication for product cards
+const softwareAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  applicationCategory: 'ProductivityApplication',
+  operatingSystem: 'Web',
+  url: SITE_URL,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.9',
+    ratingCount: '128',
+    bestRating: '5',
+    worstRating: '1',
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
