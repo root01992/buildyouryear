@@ -5,6 +5,7 @@ import { getSiteUrl, SITE_NAME } from '@/lib/site';
 import type { BlogPostMeta } from '@/lib/blog-posts';
 import BlogCardLink from '@/components/blog/BlogCardLink';
 import BlogCtaButton from '@/components/blog/BlogCtaButton';
+import ReadingProgressBar from '@/components/blog/ReadingProgressBar';
 
 /**
  * Shared layout for every blog post.
@@ -52,6 +53,7 @@ export default function BlogLayout({
 
   return (
     <article className="mx-auto w-full max-w-3xl px-4 pb-20 pt-6 sm:px-6 sm:pt-8 lg:px-8">
+      <ReadingProgressBar />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
